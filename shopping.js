@@ -23,37 +23,43 @@ let productsList = [
         name: "Lip 1",
         tag: "lip1",
         price: 5,
-        inCart: 0
+        inCart: 0,
+        id: 1
     },
     {
         name: "Lip 2",
         tag: "lip2",
         price: 6,
-        inCart: 0
+        inCart: 0,
+        id: 2
     },
     {
         name: "Lip 3",
         tag: "lip3",
         price: 7,
-        inCart: 0
+        inCart: 0,
+        id: 3
     },
     {
         name: "Lip 4",
         tag: "lip4",
         price: 8,
-        inCart: 0
+        inCart: 0,
+        id: 4
     },
     {
         name: "Lip 5",
         tag: "lip5",
         price: 9,
-        inCart: 0
+        inCart: 0,
+        id: 5
     },
     {
         name: "Lip 6",
         tag: "lip6",
         price: 10,
-        inCart: 0
+        inCart: 0,
+        id: 6
     },
 ]
 
@@ -123,39 +129,55 @@ function totalCost(value) {
     
 } 
 
+function loadCartTotal() {
+    let cartTotal = localStorage.getItem("totalCosts")
+    document.getElementById("cart-total").innerHTML = cartTotal
+}
+
 function displayCart() {
     let cartItems = localStorage.getItem("productsInCart");
     cartItems = JSON.parse(cartItems);
+    let cartContent = document.getElementsByClassName("cart-content")[0]
 
-    if (cartItems) {
-        
+    if (cartContent && cartItems) {
+        cartContent.innerHTML = " ";
+        Object.values(cartItems).map(item => {
+            cartContent.innerHTML += `
+            <div id="cart-item">
+                <button class="remove-item" data-id=${item.id}> x </button>
+                <img src="/shop-img/${item.tag}.jpg">
+                <div class="cart-item-info">
+                     <h4 class="cart-item-name"> ${item.name} </h4>
+                     <h5 class="cart-item-price"> ${item.price} € </h5>
+                    <div class="cart-item-control">
+                            <button class="cart-remove-item" data-id=${item.id}> - </button>
+                            <input class="cart-item-quantity" type="number" min="1" max="10" value="${item.inCart}">
+                            <button class="cart-add-item" data-id=${item.id}> + </button>
+                    </div>
+                </div>
+            </div>
+            `
+        })
     }
 }
 
-var removeCartItem = document.getElementsByClassName("remove-item")
+let cartItemId = []
 
-for (var i = 0; i < removeCartItem.length; i++) {
-    var button = removeCartItem[i];
-    button.addEventListener("click", function() {
-        var buttonClicked = event.target
-        buttonClicked.parentElement.remove()
-        
+function clearCart() {
+    let cartItems = localStorage.getItem('productsInCart')
+    cartItems = JSON.parse(cartItems)
+    Object.values(cartItems).map(item => {
+        cartItemId.push(item.id)
+        cartItemId.forEach(id => this.removeItem(id))
     })
 }
 
-function updateCartTotal () {
-    let cartCost = localStorage.getItem("totalCosts");
-
-    if (cartCost == undefined) {
-        
-        document.getElementById("cart-message").style.display = "block"
-        
-    } else {
-        
-        cartCost = parseInt(cartCost)
-        document.getElementById("cart-total").innerHTML = cartCost
-    }
+function removeItem(id) {
+    
 }
-updateCartTotal();
+
+removeItem(id)
+clearCart();
+loadCartTotal();
 loadingCartNumbers();
 displayCart();

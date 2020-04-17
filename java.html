@@ -75,8 +75,8 @@
 <!--cart-->
 <div id="cart-overlay">
   <div id="cart-overlay-empty"> </div>
-  <div class="cart">
 
+  <div class="cart">
     <div class="cart-header"> 
       <p> your cart </p>
       <img id="close-cart" src="icons/close-icon.png">
@@ -85,28 +85,29 @@
     <div class="cart-content">
       <!-- cart item -->
       <div id="cart-item">
+        <!-- 
         <button class="remove-item"> x </button>
         <img src="/shop-img/lip6.JPG">
         <div class="cart-item-info">
-          <h4> Lip 6 </h4>
+          <h4 class="cart-item-name"> Lip 6 </h4>
           <h5 class="cart-item-price"> 10€ </h5>
           <div class="cart-item-control">
-            <button class="cart-remove-item"> < </button>
+            <button class="cart-remove-item"> - </button>
             <input class="cart-item-quantity" type="number" min="1" max="10" value="1">
-            <button class="cart-add-item"> > </button>
+            <button class="cart-add-item"> + </button>
           </div>
-        </div>
+        </div>  
+        -->
       </div>
       <!-- end cart item -->
     </div>
 
     <div class="cart-footer"> 
-      <h3 id="cart-total"> total :  
+      <h3> total :  
         <span id="cart-total"> 0 </span>
         €
-        <button class="checkout-button"> proceed to checkout </button>
       </h3>
-      <h3 id="cart-message"> your cart is empty </h3>
+      <button class="checkout-button"> proceed to checkout </button>
     </div>
   </div>
 </div>

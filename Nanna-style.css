@@ -201,6 +201,10 @@ h2 {
     width: 30px;
 }
 
+#cart-total {
+    text-align: center;
+}
+
 .cart-footer {
     margin-top: 55px;
     text-align: center;
@@ -215,7 +219,6 @@ h2 {
     border: none;
     background: transparent;
     border: 1px solid rgb(59, 59, 59);
-    margin-top: 15px;
 }
 
 .checkout-button:hover {
@@ -224,9 +227,6 @@ h2 {
     transition: all 0.1s ease-in-out;
 }
 
-#cart-message {
-    display: none;
-}
 /* end cart area  */
 
 .product-info {
