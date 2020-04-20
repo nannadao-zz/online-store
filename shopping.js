@@ -1,23 +1,6 @@
 let cartButtons = document.querySelectorAll(".add-cart");
 
-let cartIcon = document.getElementById("cart-icon");
-
-cartIcon.addEventListener("click", function(){
-    document.getElementById("cart-overlay").style.display="block";
-});
-
-let closeCart1 = document.getElementById("close-cart");
-let closeCart2 = document.getElementById("cart-overlay-empty");
-
-closeCart2.addEventListener("click",function(){
-    document.getElementById("cart-overlay").style.display="none";
-
-});
-
-closeCart1.addEventListener("click",function(){
-    document.getElementById("cart-overlay").style.display="none"
-});
-
+/* Product List */
 let productsList = [
     {
         name: "Lip 1",
@@ -63,6 +46,7 @@ let productsList = [
     },
 ]
 
+/* Set function to Add To Cart buttons */
 for (let i = 0; i < cartButtons.length; i++) {
     cartButtons[i].addEventListener("click", function(){
         cartNumbers(productsList[i]);
@@ -70,14 +54,7 @@ for (let i = 0; i < cartButtons.length; i++) {
     })
 }
 
-function loadingCartNumbers() {
-    let productNumbers = localStorage.getItem("cartNumbers");
-
-    if (productNumbers) {
-        document.querySelector("nav span").textContent = productNumbers;
-    }
-}
-
+/* Set function to count added to cart items in Local storage */
 function cartNumbers(value) {
     let productNumbers = localStorage.getItem("cartNumbers");
 
@@ -94,6 +71,7 @@ function cartNumbers(value) {
     setProducts(value);
 }
 
+/* Set function to update products info into local storage */
 function setProducts(value) {
     let cartItems = localStorage.getItem("productsInCart");
     cartItems = JSON.parse(cartItems);
@@ -117,6 +95,7 @@ function setProducts(value) {
     localStorage.setItem("productsInCart", JSON.stringify(cartItems));
 }
 
+/* Set function to update cart total in local storage */
 function totalCost(value) {
     let cartCost = localStorage.getItem('totalCosts');
     
@@ -129,11 +108,40 @@ function totalCost(value) {
     
 } 
 
+/* Set function to update cart number to navigation bar */
+function loadingCartNumbers() {
+    let productNumbers = localStorage.getItem("cartNumbers");
+    if (productNumbers) {
+        document.querySelector("nav span").textContent = productNumbers;
+    }
+}
+
+/* Set function to display cart-overlay */
+let cartIcon = document.getElementById("cart-icon");
+
+cartIcon.addEventListener("click", function(){
+    document.getElementById("cart-overlay").style.display="block";
+});
+
+let closeCart1 = document.getElementById("close-cart");
+let closeCart2 = document.getElementById("cart-overlay-empty");
+
+closeCart2.addEventListener("click",function(){
+    document.getElementById("cart-overlay").style.display="none";
+
+});
+
+closeCart1.addEventListener("click",function(){
+    document.getElementById("cart-overlay").style.display="none"
+});
+
+/* Set function to display cart total in cart-overlay */
 function loadCartTotal() {
     let cartTotal = localStorage.getItem("totalCosts")
     document.getElementById("cart-total").innerHTML = cartTotal
 }
 
+/* Set function to display added-to-cart items in cart-overlay */
 function displayCart() {
     let cartItems = localStorage.getItem("productsInCart");
     cartItems = JSON.parse(cartItems);
@@ -161,23 +169,8 @@ function displayCart() {
     }
 }
 
-let cartItemId = []
+let cart = [];
 
-function clearCart() {
-    let cartItems = localStorage.getItem('productsInCart')
-    cartItems = JSON.parse(cartItems)
-    Object.values(cartItems).map(item => {
-        cartItemId.push(item.id)
-        cartItemId.forEach(id => this.removeItem(id))
-    })
-}
-
-function removeItem(id) {
-    
-}
-
-removeItem(id)
-clearCart();
 loadCartTotal();
 loadingCartNumbers();
 displayCart();
