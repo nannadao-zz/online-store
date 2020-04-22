@@ -1,5 +1,7 @@
 let cartButtons = document.querySelectorAll(".add-cart");
-
+const cartNumber = document.querySelector("nav span");
+const cartTotal = document.querySelector("#cart-total")
+const cartContent = document.querySelector(".cart-content")
 /* Product List */
 let productsList = [
     {
@@ -46,131 +48,152 @@ let productsList = [
     },
 ]
 
-/* Set function to Add To Cart buttons */
-for (let i = 0; i < cartButtons.length; i++) {
-    cartButtons[i].addEventListener("click", function(){
-        cartNumbers(productsList[i]);
-        totalCost(productsList[i]);
-    })
+// cart
+let cart = []
+let buttonsMain = []
+
+// products
+class Products {
+    async getProducts(){
+        let result = productsList;
+        return result;
+    } catch (error) {
+        console.log(error)
+    }
 }
 
-/* Set function to count added to cart items in Local storage */
-function cartNumbers(value) {
-    let productNumbers = localStorage.getItem("cartNumbers");
+// display of page
+class UI {
+    /* display products dynamically */
+    displayProducts(products) {
+        let productContent = document.getElementsByClassName("products-container")[0]
+        productContent.innerHTML = "";
+        products.forEach(products => {
+            productContent.innerHTML += `
+            <div class="product-image"> 
+            <img src="shop-img/${products.tag}.jpg">
+            <div class="product-info"> 
+              <p class="product-name"> ${products.name} </p>
+              <p class="product-price"> ${products.price} € </p>
+              <button class="add-cart" data-id=${products.id}> ADD TO CART </button> 
+            </div>
+            `
+        });
+    };
 
-    productNumbers = parseInt(productNumbers);
-
-    if (productNumbers) {
-        localStorage.setItem("cartNumbers", productNumbers + 1);
-        document.querySelector("nav span").textContent = productNumbers + 1;
-    } else {
-        localStorage.setItem("cartNumbers", 1);
-        document.querySelector("nav span").textContent = 1;
-    } 
-
-    setProducts(value);
-}
-
-/* Set function to update products info into local storage */
-function setProducts(value) {
-    let cartItems = localStorage.getItem("productsInCart");
-    cartItems = JSON.parse(cartItems);
-
-    if(cartItems != null) {
-
-        if(cartItems[value.tag] == undefined) {
-            cartItems = {
-                ...cartItems,
-                [value.tag]: value
+    addToCartButtons() {
+        const buttons = [...document.querySelectorAll(".add-cart")];
+        buttonsMain = buttons;
+        buttons.forEach(button => {
+            let idNumber = button.dataset.id;
+            let inCart = cart.find(item => item.id == button.dataset.id);
+            if(inCart) {
+                button.innerText = "IN CART"
+                button.disabled = true;
             }
-        }
-        cartItems[value.tag].inCart += 1;
-    } else {
-        value.inCart = 1;
-        cartItems = {
-            [value.tag]: value
-        }
+            button.addEventListener('click', event => {
+                event.target.innerText = 'IN CART';
+                button.disabled = true
+                let addedItem = {...Storage.getProduct(idNumber),amount:1}
+                cart = [...cart,addedItem]
+                Storage.saveCartItem() // save clicked items to storage
+                this.saveCartAmount(cart) //add to over-lay
+                this.addCartAmount(addedItem)
+            })
+        })   
     }
-    
-    localStorage.setItem("productsInCart", JSON.stringify(cartItems));
-}
 
-/* Set function to update cart total in local storage */
-function totalCost(value) {
-    let cartCost = localStorage.getItem('totalCosts');
-    
-    if(cartCost != null) {
-        cartCost = parseInt(cartCost);
-        localStorage.setItem('totalCosts', cartCost + value.price)
-    } else {
-        localStorage.setItem('totalCosts', value.price);
+    saveCartAmount(value) {
+        let tempTotal = 0;
+        let itemsTotal = 0;
+        cart.map(item => {
+            tempTotal += item.price * item.amount;
+            itemsTotal += item.amount
+        })
+        cartNumber.innerText = parseFloat(itemsTotal)
+        cartTotal.innerText = parseFloat(tempTotal.toFixed(2))
     }
+
+    addCartAmount(item) {
+        const div = document.createElement('div')
+        div.classList.add("cart-item");
     
-} 
-
-/* Set function to update cart number to navigation bar */
-function loadingCartNumbers() {
-    let productNumbers = localStorage.getItem("cartNumbers");
-    if (productNumbers) {
-        document.querySelector("nav span").textContent = productNumbers;
-    }
-}
-
-/* Set function to display cart-overlay */
-let cartIcon = document.getElementById("cart-icon");
-
-cartIcon.addEventListener("click", function(){
-    document.getElementById("cart-overlay").style.display="block";
-});
-
-let closeCart1 = document.getElementById("close-cart");
-let closeCart2 = document.getElementById("cart-overlay-empty");
-
-closeCart2.addEventListener("click",function(){
-    document.getElementById("cart-overlay").style.display="none";
-
-});
-
-closeCart1.addEventListener("click",function(){
-    document.getElementById("cart-overlay").style.display="none"
-});
-
-/* Set function to display cart total in cart-overlay */
-function loadCartTotal() {
-    let cartTotal = localStorage.getItem("totalCosts")
-    document.getElementById("cart-total").innerHTML = cartTotal
-}
-
-/* Set function to display added-to-cart items in cart-overlay */
-function displayCart() {
-    let cartItems = localStorage.getItem("productsInCart");
-    cartItems = JSON.parse(cartItems);
-    let cartContent = document.getElementsByClassName("cart-content")[0]
-
-    if (cartContent && cartItems) {
-        cartContent.innerHTML = " ";
-        Object.values(cartItems).map(item => {
-            cartContent.innerHTML += `
-            <div id="cart-item">
-                <button class="remove-item" data-id=${item.id}> x </button>
-                <img src="/shop-img/${item.tag}.jpg">
-                <div class="cart-item-info">
-                     <h4 class="cart-item-name"> ${item.name} </h4>
-                     <h5 class="cart-item-price"> ${item.price} € </h5>
-                    <div class="cart-item-control">
-                            <button class="cart-remove-item" data-id=${item.id}> - </button>
-                            <input class="cart-item-quantity" type="number" min="1" max="10" value="${item.inCart}">
-                            <button class="cart-add-item" data-id=${item.id}> + </button>
-                    </div>
+        div.innerHTML += `
+            <button class="remove-item" data-id=${item.id}> x </button>
+            <img src="/shop-img/${item.tag}.jpg">
+            <div class="cart-item-info">
+                <h4 class="cart-item-name"> ${item.name} </h4>
+                <h5 class="cart-item-price"> ${item.price} € </h5>
+                <div class="cart-item-control">
+                    <button class="cart-remove-item" data-id=${item.id}> - </button>
+                    <input class="cart-item-quantity" type="number" min="1" max="10" value="${item.amount}">
+                    <button class="cart-add-item" data-id=${item.id}> + </button>
                 </div>
             </div>
             `
-        })
+            cartContent.appendChild(div)
+    }
+
+    showCart() {
+        let cartIcon = document.getElementById("cart-icon");
+        cartIcon.addEventListener("click", function(){
+        document.getElementById("cart-overlay").style.display="block";
+        });
+        let closeCart1 = document.getElementById("close-cart");
+        let closeCart2 = document.getElementById("cart-overlay-empty");
+        closeCart2.addEventListener("click",function(){
+        document.getElementById("cart-overlay").style.display="none";
+        });
+        closeCart1.addEventListener("click",function(){
+        document.getElementById("cart-overlay").style.display="none"
+        });
+    }
+
+    setupApp() {
+        cart = Storage.getCart()
+        this.saveCartAmount(cart);
+        this.populateCart(cart);
+    }
+
+    populateCart(cart) {
+        cart.forEach(item => this.addCartAmount(item))
     }
 }
 
-let cart = [];
+// local storage set up
+class Storage {
+    static saveProducts(products) {
+        localStorage.setItem("products", JSON.stringify(products));
+    }
 
-loadCartTotal();
-loadingCartNumbers();
-displayCart();
+    static getProduct(value) {
+        let products = JSON.parse(localStorage.getItem('products'));
+        return products.find(item => item.id == value)
+    }
+
+    static saveCartItem() {
+        localStorage.setItem('cartItems', JSON.stringify(cart))
+    }
+
+    static getCart() {
+        return localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : []
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const ui = new UI();
+    const products = new Products();
+// setup Web
+ui.setupApp() 
+console.log(cart)
+// display methods
+products.getProducts().then(data => { 
+    ui.displayProducts(data);
+    Storage.saveProducts(data);
+}).then(() => {
+    ui.addToCartButtons()
+    ui.showCart()
+});
+})
+
