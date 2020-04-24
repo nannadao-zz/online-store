@@ -1,6 +1,6 @@
 body {
     color: rgb(0, 0, 0);
-    font-family: Helvetica Neue;
+    font-family: 'Poppins', sans-serif;
     background-color: rgba(242,242,242, 1);
     margin: 0px;
     cursor: default;
@@ -24,6 +24,7 @@ nav {
 nav a {
     text-decoration: none;
     color: black;
+    text-align: center;
 }
 
 nav span {
@@ -50,8 +51,8 @@ h2 {
     position: relative;
     display: inline-block;
     float: right;
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
 }
 
 #cart-icon:hover {

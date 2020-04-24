@@ -1,7 +1,9 @@
-let cartButtons = document.querySelectorAll(".add-cart");
+
 const cartNumber = document.querySelector("nav span");
 const cartTotal = document.querySelector("#cart-total")
 const cartContent = document.querySelector(".cart-content")
+
+
 /* Product List */
 let productsList = [
     {
@@ -120,7 +122,7 @@ class UI {
     
         div.innerHTML += `
             <button class="remove-item" data-id=${item.id}> x </button>
-            <img src="/shop-img/${item.tag}.jpg">
+            <img src="/Online Store/online-store/shop-img/${item.tag}.JPG">
             <div class="cart-item-info">
                 <h4 class="cart-item-name"> ${item.name} </h4>
                 <h5 class="cart-item-price"> ${item.price} € </h5>
@@ -158,6 +160,53 @@ class UI {
     populateCart(cart) {
         cart.forEach(item => this.addCartAmount(item))
     }
+
+    cartFunctions() {
+        cartContent.addEventListener('click', event => {
+            if (event.target.classList.contains('remove-item')) {
+                let removeItem = event.target
+                let id = removeItem.dataset.id
+                this.removeItem(id)
+                cartContent.removeChild(removeItem.parentElement)
+            }
+            else if (event.target.classList.contains('cart-add-item')) {
+                let addItem = event.target
+                let id = parseInt(addItem.dataset.id)
+                let selectedItem = cart.find(item => item.id === id)
+                selectedItem.amount += 1
+                Storage.saveCartItem(cart)
+                this.saveCartAmount(cart)
+                addItem.previousElementSibling.value = selectedItem.amount
+            }
+            else if (event.target.classList.contains('cart-remove-item')) {
+                let removeSingleItem = event.target
+                let id = removeSingleItem.dataset.id
+                let selectedItem = cart.find(item => item.id === parseInt(id))
+                selectedItem.amount -= 1
+                if (selectedItem.amount > 0) {
+                    Storage.saveCartItem(cart)
+                    this.saveCartAmount(cart)
+                    removeSingleItem.nextSiblingElement.value = selectedItem.amount
+                } else {
+                    cartContent.removeChild(removeSingleItem.parentElement.parentElement.parentElement)
+                    this.removeItem(id)
+                }
+            }
+        })
+    }
+
+    removeItem(id) {
+        // to reset cart array
+        cart = cart.filter(item => item.id !== parseInt(id))
+        // to reset ADD TO CART button functionality
+        let button = buttonsMain.find(item => item.dataset.id === id)
+        button.disabled = false
+        button.innerText = 'ADD TO CART'
+        // to reset Storage 
+        Storage.saveCartItem(cart)
+        // to update cart overlay + total
+        this.saveCartAmount(cart)
+    }
 }
 
 // local storage set up
@@ -185,8 +234,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const ui = new UI();
     const products = new Products();
 // setup Web
-ui.setupApp() 
-console.log(cart)
+ui.setupApp()
+
 // display methods
 products.getProducts().then(data => { 
     ui.displayProducts(data);
@@ -194,6 +243,7 @@ products.getProducts().then(data => {
 }).then(() => {
     ui.addToCartButtons()
     ui.showCart()
+    ui.cartFunctions()
 });
 })
 
